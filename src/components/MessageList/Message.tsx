@@ -30,7 +30,7 @@ export const Message = ({ message }: Props) => {
       )}
       <span
         className={`inline-flex rounded space-x-2 items-start p-3 ${
-          message.name === session?.user?.name ? "bg-[#4a9c6d]" : "bg-[#363739]"
+          message.name === session?.user?.name ? "bg-[#4a9c6d]" : "bg-[#d275cb]"
         } `}
       >
         {message.name !== session?.user?.name && <span className="font-bold">{message.name}:&nbsp;</span>}

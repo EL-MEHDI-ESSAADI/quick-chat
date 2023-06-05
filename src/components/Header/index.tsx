@@ -9,13 +9,17 @@ function Header() {
 
   if (session)
     return (
-      <div>
+      <div className="container py-3">
         <p>signed in as {session.user?.name}</p>
         <button onClick={() => signOut({ redirect: false })}>Logout</button>
       </div>
     );
 
-  return <button onClick={() => signIn()}>Login</button>;
+  return (
+    <div className="container py-3">
+      <button onClick={() => signIn()}>Login</button>;
+    </div>
+  );
 }
 
 export { Header };
