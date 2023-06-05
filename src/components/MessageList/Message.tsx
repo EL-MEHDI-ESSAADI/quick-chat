@@ -25,7 +25,7 @@ export const Message = ({ message }: Props) => {
     >
       {message?.avatar && (
         <div className="w-12 h-12 overflow-hidden flex-shrink-0 rounded">
-          <img width={50} height={50} src={message.avatar} alt={message.name} />
+          <Image width={50} height={50} src={message.avatar} alt={message.name} />
         </div>
       )}
       <span
