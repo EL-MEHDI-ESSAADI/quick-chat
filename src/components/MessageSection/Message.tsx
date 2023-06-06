@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
-export type Message = {
+export type MessageType = {
   id: string;
   name: string;
   avatar?: string;
@@ -11,7 +11,7 @@ export type Message = {
 };
 
 interface Props {
-  message: Message;
+  message: MessageType;
 }
 
 export const Message = ({ message }: Props) => {

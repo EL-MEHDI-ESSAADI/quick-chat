@@ -1,6 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../[...nextauth]/route";
+import { authOptions } from "@/constants";
 import { NextResponse, NextRequest } from "next/server";
 
 const secret = process.env.NEXTAUTH_SECRET;

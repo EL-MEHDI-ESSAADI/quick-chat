@@ -26,7 +26,7 @@ function AddMessageForm() {
   const [message, setMessage] = React.useState("");
 
   function handleSubmit() {
-    if (!message || !session) return;
+    if (!message ) return;
     addNewMessage({
       variables: {
         name: session?.user?.name,
