@@ -24,10 +24,7 @@ function Header() {
               />
             </div>
           )}
-          <button
-            onClick={() => signOut({ redirect: false })}
-            className="bg-gray-950 text-white rounded h-12 px-6 font-medium"
-          >
+          <button onClick={() => signOut({ redirect: false })} className="bg-gray-950 text-white rounded h-12 px-6 font-medium">
             Sign out
           </button>
         </div>

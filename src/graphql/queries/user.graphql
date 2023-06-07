@@ -1,0 +1,7 @@
+query User($email: String!) {
+  user(by: { email: $email }) {
+    email
+    name
+    image
+  }
+}

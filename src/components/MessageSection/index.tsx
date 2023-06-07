@@ -61,13 +61,13 @@ function MessagesSection() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Chat</CardTitle>
+          <CardTitle>Global Chat</CardTitle>
         </CardHeader>
         <CardContent>
-          <MessageList />
+          {/* <MessageList /> */}
         </CardContent>
         <CardFooter>
-          <AddMessageForm />
+          {/* <AddMessageForm /> */}
         </CardFooter>
       </Card>
     );

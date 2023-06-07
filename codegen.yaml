@@ -1,0 +1,13 @@
+overwrite: true
+schema: http://127.0.0.1:4000/graphql
+documents: "src/graphql/**/*.{ts,graphql}"
+generates:
+  src/grafbase-api/index.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+      - typescript-apollo-client-helpers
+    ./graphql.schema.json:
+        plugins:
+          - introspection

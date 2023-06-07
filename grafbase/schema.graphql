@@ -1,8 +1,23 @@
+type Room @model {
+  title: String!
+  private: Boolean @default(value: true)
+  messages: [Message]
+  users: [User]
+}
+
 type Message @model {
-  name: String!
-  avatar: URL
   body: String!
   likes: Int @default(value: 0)
+  room: Room!
+  user: User!
+}
+
+type User @model {
+  name: String!
+  image: URL!
+  email: String! @unique
+  rooms: [Room]
+  friends: [User]
 }
 
 schema @auth(providers: [{ type: jwt, issuer: "nextauth", secret: "{{ env.NEXTAUTH_SECRET }}" }], rules: [{ allow: private }]) {

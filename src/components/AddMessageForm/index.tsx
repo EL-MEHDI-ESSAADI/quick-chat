@@ -26,7 +26,7 @@ function AddMessageForm() {
   const [message, setMessage] = React.useState("");
 
   function handleSubmit() {
-    if (!message ) return;
+    if (!message) return;
     addNewMessage({
       variables: {
         name: session?.user?.name,
@@ -39,7 +39,17 @@ function AddMessageForm() {
 
   return (
     <div className="flex w-full max-w-sm items-center space-x-2">
-      <Input type="email" placeholder="Email" value={message} onChange={(e) => setMessage(e.target.value)} />
+      <Input
+        type="email"
+        placeholder="Message"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && message) {
+            handleSubmit();
+          }
+        }}
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
       <Button type="submit" onClick={handleSubmit}>
         Send
       </Button>
