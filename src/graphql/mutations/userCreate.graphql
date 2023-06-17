@@ -1,9 +1,0 @@
-mutation UserCreate($name: String!, $email: String!, $image: URL!) {
-  userCreate(input: { email: $email, name: $name, image: $image }) {
-    user {
-      email
-      name
-      image
-    }
-  }
-}

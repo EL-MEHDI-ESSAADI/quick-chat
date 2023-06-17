@@ -1,13 +1,13 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { ApolloProviderWrapper, Header, NextAuthProvider } from "@/components";
 import { Metadata } from "next";
-import { authOptions } from "@/constants";
-import { getServerSession } from "next-auth";
+import { getUserFromCookie } from "@/lib/utils";
+import { cookies } from "next/headers";
+import { AuthProvider } from "@/components";
+import { Toaster } from "@/components/ui/toaster"
+
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "QuickChat",
@@ -15,17 +15,13 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession(authOptions);
+  const serverFetchedUser = getUserFromCookie(cookies());
 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextAuthProvider session={session}>
-          <ApolloProviderWrapper>
-            <Header />
-            {children}
-          </ApolloProviderWrapper>
-        </NextAuthProvider>
+        <AuthProvider serverFetchedUser={serverFetchedUser}>{children}</AuthProvider>
+        <Toaster />
       </body>
     </html>
   );
