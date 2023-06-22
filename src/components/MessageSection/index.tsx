@@ -1,82 +1,53 @@
-// "use client";
+"use client";
 
-// import React, { useLayoutEffect } from "react";
-// import { Message, type MessageType } from "./Message";
-// import { gql, useQuery } from "@apollo/client";
-// import { useSession } from "next-auth/react";
-// import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
-// import { AddMessageForm } from "../AddMessageForm";
-
-// const GetRecentMessagesQuery = gql`
-//   query GetRecentMessages($last: Int) @live {
-//     messageCollection(last: $last) {
-//       edges {
-//         node {
-//           id
-//           name
-//           avatar
-//           body
-//           likes
-//           createdAt
-//         }
-//       }
-//     }
-//   }
-// `;
+import React, {  } from "react";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 // function MessageList() {
+//   const { data, isLoading, isError } = useQuery({ queryKey: ["messages"], queryFn: getPublicRoomAndMessages });
 //   const listElementRef = React.useRef<HTMLDivElement>(null);
+//   console.log(data)
 
-//   const { loading, error, data } = useQuery<{
-//     messageCollection: { edges: { node: MessageType }[] };
-//   }>(GetRecentMessagesQuery, {
-//     variables: {
-//       last: 100,
-//     },
-//   });
+//   // useLayoutEffect(() => {
+//   //   if (!data?.messageCollection?.edges?.length) return;
 
-//   useLayoutEffect(() => {
-//     if (!data?.messageCollection?.edges?.length) return;
+//   //   listElementRef.current?.scrollBy(0, listElementRef.current?.scrollHeight);
+//   // }, [data?.messageCollection?.edges?.length]);
 
-//     listElementRef.current?.scrollBy(0, listElementRef.current?.scrollHeight);
-//   }, [data?.messageCollection?.edges?.length]);
+//   // get public room
+//   async function getPublicRoomAndMessages() {
+//     return Promise.all([
+//       pb.collection("rooms").getOne("pgumvg05s2nie31", {
+//         expand: "messages, messages.user",
+//       }),
+//       pb.collection("messages").getList(1, 30, { sort: "-updated", filter: "room.id=pgumvg05s2nie31" }),
+//     ]);
+//   }
 
-//   if (loading) return <p className="text-center">Fetching most recent chat messages.</p>;
 
-//   if (error) return <p className="text-center">Something went wrong. Refresh to try again.</p>;
+//   if (isLoading) return <p className="text-center">Fetching most recent chat messages.</p>;
+
+//   if (isError) return <p className="text-center">Something went wrong. Refresh to try again.</p>;
 
 //   return (
 //     <div className="h-[max(60vh,300px)] flex flex-col space-y-3 overflow-y-scroll" ref={listElementRef}>
-//       {data?.messageCollection?.edges?.map(({ node }) => (
+//       {/* {data?.messageCollection?.edges?.map(({ node }) => (
 //         <Message key={node?.id} message={node} />
-//       ))}
+//       ))} */}
 //     </div>
 //   );
 // }
 
-// function MessagesSection() {
-//   const { data: session } = useSession();
+function MessagesSection() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Global Chat</CardTitle>
+      </CardHeader>
+      {/* <CardContent><MessageList /></CardContent> */}
+      <CardFooter>{/* <AddMessageForm /> */}</CardFooter>
+    </Card>
+  );
+}
 
-//   if (session)
-//     return (
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Global Chat</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           {/* <MessageList /> */}
-//         </CardContent>
-//         <CardFooter>
-//           {/* <AddMessageForm /> */}
-//         </CardFooter>
-//       </Card>
-//     );
-
-//   return (
-//     <Card>
-//       <CardHeader>Sign in with GitHub to join the chat!</CardHeader>
-//     </Card>
-//   );
-// }
-
-// export { MessagesSection };
+export { MessagesSection };

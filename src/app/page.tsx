@@ -1,8 +1,9 @@
 "use client";
 
 import { useUser } from "@/lib/hooks";
-import { pb } from "@/lib/modules";
 import { useRouter } from "next/navigation";
+import { pb } from "@/lib/modules";
+import { GlobalChat } from "@/components/client";
 
 export default function Home() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function Home() {
         hello <strong>{currentUser?.name}</strong>
       </h1>
       <button onClick={logout}>logout</button>
+      <GlobalChat />
     </main>
   );
 }
