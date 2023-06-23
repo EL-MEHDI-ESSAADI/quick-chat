@@ -11,3 +11,18 @@ export type User = {
   updated: string;
   verified: boolean;
 } | null;
+
+export type Message = {
+  body: string;
+  collectionId: string;
+  collectionName: string;
+  created: string;
+  expand: {
+    user:  NonNullable<User>;
+  };
+  id: string;
+  likes: number;
+  room: string;
+  updated: string;
+  user: string;
+};
