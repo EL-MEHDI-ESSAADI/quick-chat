@@ -9,7 +9,7 @@ import Image from "next/image";
 export const SingleMessageView = ({ message }: { message: Message; }) => {
   const { currentUser } = useUser();
   const isCurrentUserMessage = currentUser?.id === message.expand.user.id;
-  const avatarSrc = `http://127.0.0.1:8090/api/files/${message.expand.user.collectionId}/${message.expand.user.id}/${message.expand.user.avatar}`;
+  const avatarSrc = `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${message.expand.user.collectionId}/${message.expand.user.id}/${message.expand.user.avatar}`;
 
   return (
     <div>
