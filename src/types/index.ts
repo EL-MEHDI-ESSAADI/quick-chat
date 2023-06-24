@@ -12,13 +12,18 @@ export type User = {
   verified: boolean;
 } | null;
 
+export type Room = {
+  id: string;
+  title: string;
+};
+
 export type Message = {
   body: string;
   collectionId: string;
   collectionName: string;
   created: string;
   expand: {
-    user:  NonNullable<User>;
+    user: NonNullable<User>;
   };
   id: string;
   likes: number;
