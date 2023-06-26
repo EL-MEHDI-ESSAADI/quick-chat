@@ -1,2 +1,2 @@
-export { GlobalChat } from "./GlobalChat";
+export { ChatRoom } from "./ChatRoom";
 export {ReactQueryHydrate} from "./ReactQueryHydrate";

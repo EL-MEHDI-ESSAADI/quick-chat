@@ -5,11 +5,12 @@ import dayjs from "dayjs";
 import { useUser } from "@/lib/hooks";
 import { Message } from "@/types";
 import Image from "next/image";
+import { POCKETBASE_URL } from "@/constants";
 
-export const SingleMessageView = ({ message }: { message: Message; }) => {
+export const SingleMessageView = ({ message }: { message: Message }) => {
   const { currentUser } = useUser();
   const isCurrentUserMessage = currentUser?.id === message.expand.user.id;
-  const avatarSrc = `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${message.expand.user.collectionId}/${message.expand.user.id}/${message.expand.user.avatar}`;
+  const avatarSrc = `${POCKETBASE_URL}/api/files/${message.expand.user.collectionId}/${message.expand.user.id}/${message.expand.user.avatar}`;
 
   return (
     <div>

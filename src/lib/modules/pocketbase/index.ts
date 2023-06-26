@@ -1,6 +1,7 @@
+import { POCKETBASE_URL } from "@/constants";
 import PocketBase from "pocketbase";
 
-const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL);
+const pb = new PocketBase(POCKETBASE_URL);
 
 if (typeof window !== "undefined") {
   pb.authStore.loadFromCookie(document.cookie);

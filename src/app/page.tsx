@@ -3,7 +3,8 @@
 import { useUser } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import { pb } from "@/lib/modules";
-import { GlobalChat } from "@/components/client";
+import { ChatRoom } from "@/components/client";
+import { GLOBAL_ROOM_ID } from "@/constants";
 
 export default function Home() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function Home() {
         hello <strong>{currentUser?.name}</strong>
       </h1>
       <button onClick={logout}>logout</button>
-      <GlobalChat />
+      <ChatRoom roomId={GLOBAL_ROOM_ID} />
     </main>
   );
 }
