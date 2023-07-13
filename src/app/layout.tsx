@@ -19,6 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png" />
         <link rel="manifest" href="/images/favicon/site.webmanifest" />
+        <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
       </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>

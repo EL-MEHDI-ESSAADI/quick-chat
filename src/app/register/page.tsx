@@ -129,7 +129,7 @@ function Register() {
                     name="avatar"
                     render={({ field: { value, onChange, ...field } }) => (
                       <Input
-                        placeholder="avatar"
+                        placeholder="Profile Picture"
                         type="file"
                         accept=".png, .webp, .gif, .jpg"
                         onChange={(e) => onChange(e.target?.files)}
