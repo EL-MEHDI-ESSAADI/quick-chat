@@ -1,29 +1,34 @@
 "use client";
 
-import { pb } from "@/lib/modules";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useLayoutEffect, useMemo } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import dayjs from "dayjs";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Message, Room } from "@/types";
+import { ListResult } from "pocketbase";
+import dayjs from "dayjs";
+
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { SingleMessageView } from "./SingleMessageView";
 import { AddMessageForm } from "./AddMessageForm";
-import { ListResult } from "pocketbase";
+import { Message, Room } from "@/types";
+import { pb } from "@/lib/modules";
+import { Button } from "../ui/button";
 
 dayjs.extend(relativeTime);
 
-function getRoomAndMessages(roomId: string) {
+const getRoomAndMessages = (roomId: string) => {
   return () =>
     Promise.all([
       pb.collection("rooms").getOne<Room>(roomId, { expand: "messages, messages.user" }),
-      pb.collection("messages").getList<Message>(1, 30, { sort: "-created", filter: `room='${roomId}'`, expand: "user" }),
+      pb
+        .collection("messages")
+        .getList<Message>(1, 30, { sort: "-created", filter: `room='${roomId}'`, expand: "user" }),
     ]);
-}
+};
 
 const useGlobalChat = (roomId: string) => {
   const queryClient = useQueryClient();
-  const messagesListRef = React.useRef<HTMLDivElement>(null);
+  const [showScrollToBottomPopup, setShowScrollToBottomPopup] = React.useState(false);
+  const messagesContainerRef = React.useRef<HTMLDivElement>(null);
   const queryKey = useMemo(() => [`room-${roomId}`], [roomId]);
   const { data, isLoading, isError } = useQuery<[Room, ListResult<Message>]>({
     queryKey: queryKey,
@@ -40,7 +45,8 @@ const useGlobalChat = (roomId: string) => {
   // realtime messages update
   useEffect(() => {
     if (!room?.id) return;
-    pb.collection("messages").subscribe<Message>("*", function (e) {
+
+    pb.collection("messages").subscribe<Message>("*", (e) => {
       if (e.action !== "create" || e.record.room !== room?.id) return;
       queryClient.invalidateQueries({ queryKey: queryKey });
     });
@@ -50,41 +56,69 @@ const useGlobalChat = (roomId: string) => {
     };
   }, [queryClient, room?.id, queryKey]);
 
-  //  scroll to bottom of messages list when messages change
-  useLayoutEffect(() => {
-    if (!messages?.length) return;
+  // showing scroll to bottom popup
+  useEffect(() => {
+    if (!messagesContainerRef.current) return;
+    messagesContainerRef.current?.addEventListener("scroll", handleScroll);
 
-    messagesListRef.current?.scrollBy(0, messagesListRef.current?.scrollHeight);
-  }, [messages]);
+    function handleScroll() {
+      if (!messagesContainerRef.current) return;
+      const maxScrollHeight = messagesContainerRef.current.scrollHeight - messagesContainerRef.current.clientHeight;
+      if (messagesContainerRef.current.scrollTop < maxScrollHeight - 100) setShowScrollToBottomPopup(true);
+      else setShowScrollToBottomPopup(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [isLoading]);
+
+  function scrollToBottom() {
+    messagesContainerRef.current?.scrollTo(0, messagesContainerRef.current.scrollHeight);
+  }
 
   return {
     isLoading,
     isError,
+    showScrollToBottomPopup,
+    scrollToBottom,
     room,
     messages,
-    messagesListRef,
+    messagesContainerRef,
     messagesElements,
   };
 };
 
 function ChatRoom({ roomId }: { roomId: string }) {
-  const { isLoading, isError, room, messages, messagesListRef, messagesElements } = useGlobalChat(roomId);
+  const { isLoading, isError, showScrollToBottomPopup, room, messagesContainerRef, scrollToBottom, messagesElements } =
+    useGlobalChat(roomId);
 
-  if (isLoading) return <p className="text-center">Fetching most recent chat messages...</p>;
-  if (isError || !room || !messages) return <p className="text-center">Fail to fetch chat messages.</p>;
+  if (isError) return <p className="text-center">Fail to fetch chat messages.</p>;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>{room?.title}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div ref={messagesListRef} className="h-[max(60vh,300px)] flex flex-col space-y-3 overflow-y-scroll">
-          {messagesElements}
-        </div>
+      <CardContent className="h-[max(60vh,300px)] overflow-auto scrollbar-hide relative" ref={messagesContainerRef}>
+        {isLoading && (
+          <div className="h-full grid content-center justify-center">
+            <p>Loading chat...</p>
+          </div>
+        )}
+        {!isLoading && !isError && <ul className="flex flex-col space-y-3">{messagesElements}</ul>}
+        {showScrollToBottomPopup && (
+          <Button
+            variant="secondary"
+            className="sticky bottom-1 left-1/2 -translate-x-1/2 text-xs p-2 h-auto"
+            onClick={scrollToBottom}
+          >
+            Scroll to see latest messages
+          </Button>
+        )}
       </CardContent>
-      <CardFooter>
-        <AddMessageForm roomId={room.id} />
+      <CardFooter className="!mt-4">
+        <AddMessageForm roomId={room?.id} />
       </CardFooter>
     </Card>
   );

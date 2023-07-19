@@ -9,17 +9,35 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "QuickChat",
   description: "Real time chat app",
+  icons: {
+    shortcut: "/images/favicon/favicon.ico",
+    icon: [
+      {
+        url: "/images/favicon/favicon-32x32.png",
+        sizes: "32x32",
+      },
+      {
+        url: "/images/favicon/favicon-16x16.png",
+        sizes: "16x16",
+      },
+    ],
+    apple: {
+      sizes: "180x180",
+      url: "/images/favicon/apple-touch-icon.png",
+    },
+  },
+  manifest: "/images/favicon/site.webmanifest",
+  themeColor: "#ffffff",
+  other: {
+    "msapplication-TileColor": "#ffffff",
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png" />
-        <link rel="manifest" href="/images/favicon/site.webmanifest" />
-        <link rel="shortcut icon" href="/images/favicon/favicon.ico" type="image/x-icon" />
+        <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5" />
       </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>

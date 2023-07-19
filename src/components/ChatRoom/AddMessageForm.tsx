@@ -6,7 +6,7 @@ import { useUser } from "@/lib/hooks";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export const AddMessageForm = ({ roomId }: { roomId: string; }) => {
+export const AddMessageForm = ({ roomId }: { roomId?: string }) => {
   const { currentUser } = useUser();
   const [message, setMessage] = React.useState("");
 
@@ -31,8 +31,14 @@ export const AddMessageForm = ({ roomId }: { roomId: string; }) => {
         placeholder="Message"
         onKeyDown={onKeyDown}
         value={message}
-        onChange={(e) => setMessage(e.target.value)} />
-      <Button type="submit" onClick={handleSubmit}>
+        onChange={(e) => setMessage(e.target.value)}
+        disabled={!roomId}
+      />
+      <Button
+        type="submit"
+        onClick={handleSubmit}
+        disabled={!roomId}
+      >
         Send
       </Button>
     </div>
