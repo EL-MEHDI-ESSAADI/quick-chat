@@ -1,1 +1,1 @@
-export { Providers } from "./Providers/index";
+export { Providers } from "./Providers";
