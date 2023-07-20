@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { getUserFromCookie } from "@/lib/utils";
-import ReactQueryProvider from "./ReactQueryProvider";
+import {ReactQueryProvider} from "./ReactQueryProvider";
 import { AuthProvider } from "./AuthProvider";
 import { ThemeProvider } from "./ThemeProvider";
 
