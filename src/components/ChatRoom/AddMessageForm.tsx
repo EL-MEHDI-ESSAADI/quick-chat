@@ -34,11 +34,7 @@ export const AddMessageForm = ({ roomId }: { roomId?: string }) => {
         onChange={(e) => setMessage(e.target.value)}
         disabled={!roomId}
       />
-      <Button
-        type="submit"
-        onClick={handleSubmit}
-        disabled={!roomId}
-      >
+      <Button type="submit" onClick={handleSubmit} disabled={!roomId}>
         Send
       </Button>
     </div>
