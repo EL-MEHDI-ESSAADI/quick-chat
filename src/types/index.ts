@@ -10,6 +10,7 @@ export type User = {
   created: string;
   updated: string;
   verified: boolean;
+  bio?: string;
 } | null;
 
 export type Room = {
