@@ -5,10 +5,9 @@ import React, { ReactNode } from "react";
 import dayjs from "dayjs";
 import { CalendarIcon } from "@radix-ui/react-icons";
 
-import { cn } from "@/lib/utils";
+import { cn, getUserImageSrc } from "@/lib/utils";
 import { useUser } from "@/lib/hooks";
 import { Message } from "@/types";
-import { POCKETBASE_URL } from "@/constants";
 import { Avatar } from "@/components/client";
 import {
   HoverCard,
@@ -23,7 +22,6 @@ const HoverProfilePreview = ({
   message: Message;
   children: ReactNode;
 }) => {
-  const avatarSrc = `${POCKETBASE_URL}/api/files/${message.expand.user.collectionId}/${message.expand.user.id}/${message.expand.user.avatar}`;
   const { user } = message.expand;
 
   return (
@@ -33,7 +31,11 @@ const HoverProfilePreview = ({
       </HoverCardTrigger>
       <HoverCardContent className="w-fit max-w-xs">
         <div className="flex justify-between gap-6">
-          <Avatar src={avatarSrc} alt={user.name} type="circle" />
+          <Avatar
+            src={getUserImageSrc(message.expand.user)}
+            alt={user.name}
+            type="circle"
+          />
           <div className="space-y-1">
             <h4 className="text-sm font-semibold">{user.name}</h4>
             {user.bio && <p className="text-sm">{user.bio}</p>}
@@ -54,10 +56,9 @@ export const SingleMessageView = ({ message }: { message: Message }) => {
   const { currentUser } = useUser();
 
   const isCurrentUserMessage = currentUser?.id === message.expand.user.id;
-  const avatarSrc = `${POCKETBASE_URL}/api/files/${message.expand.user.collectionId}/${message.expand.user.id}/${message.expand.user.avatar}`;
   const userAvatarEl = (
     <Avatar
-      src={avatarSrc}
+      src={getUserImageSrc(message.expand.user)}
       alt={message.expand.user.name}
       className="cursor-pointer"
     />
