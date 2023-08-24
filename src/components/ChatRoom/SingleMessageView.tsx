@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 import { CalendarIcon } from "@radix-ui/react-icons";
 
 import { cn, getUserImageSrc } from "@/lib/utils";
-import { useUser } from "@/lib/hooks";
 import { Message } from "@/types";
 import { Avatar } from "@/components/client";
 import {
@@ -52,10 +51,14 @@ const HoverProfilePreview = ({
   );
 };
 
-export const SingleMessageView = ({ message }: { message: Message }) => {
-  const { currentUser } = useUser();
-
-  const isCurrentUserMessage = currentUser?.id === message.expand.user.id;
+export const SingleMessageView = ({
+  message,
+  currentUserId,
+}: {
+  message: Message;
+  currentUserId: string;
+}) => {
+  const isCurrentUserMessage = currentUserId === message.expand.user.id;
   const userAvatarEl = (
     <Avatar
       src={getUserImageSrc(message.expand.user)}

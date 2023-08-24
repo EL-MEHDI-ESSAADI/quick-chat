@@ -2,12 +2,10 @@
 
 import { pb } from "@/lib/modules";
 import React from "react";
-import { useUser } from "@/lib/hooks";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export const AddMessageForm = ({ roomId }: { roomId?: string }) => {
-  const { currentUser } = useUser();
+export const AddMessageForm = ({ roomId, userId }: { roomId?: string, userId: string }) => {
   const [message, setMessage] = React.useState("");
 
   function handleSubmit() {
@@ -15,7 +13,7 @@ export const AddMessageForm = ({ roomId }: { roomId?: string }) => {
     pb.collection("messages").create({
       body: message,
       likes: 0,
-      user: currentUser?.id,
+      user: userId,
       room: roomId,
     });
     setMessage("");

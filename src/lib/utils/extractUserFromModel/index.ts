@@ -15,5 +15,6 @@ export function extractUserFromModel(model: Record | Admin | null) {
     created: model.created,
     updated: model.updated,
     verified: model.verified,
+    bio: model.bio,
   };
 }

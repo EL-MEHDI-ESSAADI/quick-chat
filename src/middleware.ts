@@ -1,25 +1,41 @@
-import { PAGES_RESTRICTED_FROM_LOGEDIN_USERS, PAGES_RESTRICTED_FROM_LOGGEDOUT_USERS } from "@/constants";
+import {
+  PAGES_RESTRICTED_FROM_LOGEDIN_USERS,
+  PAGES_RESTRICTED_FROM_LOGGEDOUT_USERS,
+} from "@/constants";
 import { NextRequest, NextResponse } from "next/server";
 import { pb } from "./lib/modules";
 
-export default function middleware(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  let isUserLoggedIn = false;
-
+  const response = NextResponse.next();
   const authCookie = request.cookies.get("pb_auth");
 
-  if (authCookie) {
+  pb.authStore.onChange(() => {
+    response?.headers.set("set-cookie", pb.authStore.exportToCookie());
+  });
+
+  if (authCookie)
     pb.authStore.loadFromCookie(`${authCookie.name}=${authCookie.value}`);
 
-    if (pb.authStore.isValid) isUserLoggedIn = true;
+  try {
+    if (pb.authStore.isValid) await pb.collection("users").authRefresh();
+  } catch (error) {
+    pb.authStore.clear();
   }
 
-  if (isUserLoggedIn && PAGES_RESTRICTED_FROM_LOGEDIN_USERS.includes(pathname)) {
+  if (
+    pb.authStore.model &&
+    PAGES_RESTRICTED_FROM_LOGEDIN_USERS.includes(pathname)
+  ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
-  if (!isUserLoggedIn && PAGES_RESTRICTED_FROM_LOGGEDOUT_USERS.includes(pathname)) {
+  if (
+    !pb.authStore.model &&
+    PAGES_RESTRICTED_FROM_LOGGEDOUT_USERS.includes(pathname)
+  ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
+  return response;
 }
 
 export const config = {
