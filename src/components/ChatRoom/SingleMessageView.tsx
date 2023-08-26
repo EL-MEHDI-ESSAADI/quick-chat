@@ -5,7 +5,8 @@ import React, { ReactNode } from "react";
 import dayjs from "dayjs";
 import { CalendarIcon } from "@radix-ui/react-icons";
 
-import { cn, getUserImageSrc } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
+import { getUserImageSrc } from "@/lib/utils/getUserImageSrc";
 import { Message } from "@/types";
 import { Avatar } from "@/components/client";
 import {
@@ -70,9 +71,8 @@ export const SingleMessageView = ({
   return (
     <li>
       <div
-        className={cn("relative flex space-x-1", {
+        className={cn("relative flex flex-row space-x-1", {
           "flex-row-reverse space-x-reverse": isCurrentUserMessage,
-          "flex-row": !isCurrentUserMessage,
         })}
       >
         {isCurrentUserMessage && userAvatarEl}

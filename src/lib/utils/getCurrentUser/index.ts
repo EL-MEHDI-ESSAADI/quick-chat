@@ -1,5 +1,5 @@
 import { User } from "@/types";
-import { extractUserFromModel } from "@/lib/utils";
+import { extractUserFromModel } from "@/lib/utils/extractUserFromModel";
 import { cookies } from "next/headers";
 import { POCKETBASE_URL } from "@/constants";
 import PocketBase from "pocketbase";

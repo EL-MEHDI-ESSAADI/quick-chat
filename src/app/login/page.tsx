@@ -117,7 +117,7 @@ function Login() {
       </Form>
       <p className="mt-3 text-center">
         Don't have an account?{" "}
-        <Link href="/register" prefetch={false} className="underline">
+        <Link href="/register" className="underline">
           Sign up
         </Link>
       </p>

@@ -1,8 +1,8 @@
 "use client";
 
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import React from "react";
-import { twMerge } from "tailwind-merge";
 
 function Avatar({
   src,
@@ -21,7 +21,7 @@ function Avatar({
       height={48}
       src={src}
       alt={alt}
-      className={twMerge(
+      className={cn(
         "h-[48px] w-[48px] flex-shrink-0 object-cover object-center",
         type === "square" ? "rounded" : "rounded-full",
         className,

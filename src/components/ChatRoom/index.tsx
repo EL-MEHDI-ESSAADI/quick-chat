@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { RefObject, useEffect, useMemo } from "react";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { ListResult } from "pocketbase";
 import dayjs from "dayjs";
@@ -20,12 +20,10 @@ import { pb } from "@/lib/modules/client-pocketbase";
 
 dayjs.extend(relativeTime);
 
-const getRoomAndMessages = (roomId: string) => {
+const getRoomWithMessages = (roomId: string) => {
   return () =>
     Promise.all([
-      pb
-        .collection("rooms")
-        .getOne<Room>(roomId, { expand: "messages, messages.user" }),
+      pb.collection("rooms").getOne<Room>(roomId),
       pb.collection("messages").getList<Message>(1, 30, {
         sort: "-created",
         filter: `room='${roomId}'`,
@@ -35,14 +33,15 @@ const getRoomAndMessages = (roomId: string) => {
 };
 
 const useGlobalChat = (roomId: string, user: NonNullable<User>) => {
-  const queryClient = useQueryClient();
-  const [showScrollToBottomPopup, setShowScrollToBottomPopup] =
-    React.useState(false);
   const messagesContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const queryClient = useQueryClient();
   const queryKey = useMemo(() => [`room-${roomId}`], [roomId]);
-  const { data, isLoading, isError } = useQuery<[Room, ListResult<Message>]>({
+  const { data, isLoading, isError } = useSuspenseQuery<
+    [Room, ListResult<Message>]
+  >({
     queryKey: queryKey,
-    queryFn: getRoomAndMessages(roomId),
+    queryFn: getRoomWithMessages(roomId),
   });
 
   const room = data?.[0];
@@ -64,9 +63,7 @@ const useGlobalChat = (roomId: string, user: NonNullable<User>) => {
 
     pb.collection("messages").subscribe<Message>("*", (e) => {
       if (e.action !== "create" || e.record.room !== room?.id) return;
-      queryClient.invalidateQueries({ queryKey: queryKey }).then(() => {
-        if (e.record.user === user?.id) scrollToBottom();
-      });
+      queryClient.invalidateQueries({ queryKey: queryKey });
     });
 
     return () => {
@@ -74,7 +71,38 @@ const useGlobalChat = (roomId: string, user: NonNullable<User>) => {
     };
   }, [queryClient, room?.id, queryKey, user?.id]);
 
-  // showing scroll to bottom popup
+  // initial scroll to bottom
+  useEffect(() => {
+    messagesContainerRef.current?.scrollTo({
+      behavior: "smooth",
+      top: messagesContainerRef.current?.scrollHeight,
+    });
+  }, [room?.id]);
+
+  return {
+    isLoading,
+    isError,
+    room,
+    messagesContainerRef,
+    messagesElements,
+  };
+};
+
+const ScrollToBottomPopup = ({
+  messagesContainerRef,
+}: {
+  messagesContainerRef: RefObject<HTMLDivElement>;
+}) => {
+  const [showScrollToBottomPopup, setShowScrollToBottomPopup] =
+    React.useState(false);
+
+  function scrollToBottom() {
+    messagesContainerRef.current?.scrollTo({
+      behavior: "smooth",
+      top: messagesContainerRef.current?.scrollHeight,
+    });
+  }
+
   useEffect(() => {
     if (!messagesContainerRef.current) return;
     messagesContainerRef.current?.addEventListener("scroll", handleScroll);
@@ -90,29 +118,18 @@ const useGlobalChat = (roomId: string, user: NonNullable<User>) => {
         setShowScrollToBottomPopup(true);
       else setShowScrollToBottomPopup(false);
     }
-  }, []);
+  }, [messagesContainerRef]);
 
-  // initial scroll to bottom
-  useEffect(() => {
-    scrollToBottom();
-  }, [room?.id]);
+  if (!showScrollToBottomPopup) return null;
 
-  function scrollToBottom() {
-    messagesContainerRef.current?.scrollTo({
-      behavior: "smooth",
-      top: messagesContainerRef.current?.scrollHeight,
-    });
-  }
-
-  return {
-    isLoading,
-    isError,
-    showScrollToBottomPopup,
-    scrollToBottom,
-    room,
-    messagesContainerRef,
-    messagesElements,
-  };
+  return (
+    <button
+      className="sticky bottom-1 left-1/2 -translate-x-1/2 rounded-full border border-[#363739] bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground hover:bg-secondary/80"
+      onClick={scrollToBottom}
+    >
+      Scroll to see latest messages
+    </button>
+  );
 };
 
 function ChatRoom({
@@ -122,15 +139,8 @@ function ChatRoom({
   roomId: string;
   user: NonNullable<User>;
 }) {
-  const {
-    isLoading,
-    isError,
-    showScrollToBottomPopup,
-    room,
-    messagesContainerRef,
-    scrollToBottom,
-    messagesElements,
-  } = useGlobalChat(roomId, user);
+  const { isLoading, isError, room, messagesContainerRef, messagesElements } =
+    useGlobalChat(roomId, user);
 
   return (
     <Card>
@@ -149,14 +159,7 @@ function ChatRoom({
         {!isLoading && !isError && (
           <ul className="flex flex-col space-y-3">{messagesElements}</ul>
         )}
-        {showScrollToBottomPopup && (
-          <button
-            className="sticky bottom-1 left-1/2 -translate-x-1/2 rounded-full border border-[#363739] bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground hover:bg-secondary/80"
-            onClick={scrollToBottom}
-          >
-            Scroll to see latest messages
-          </button>
-        )}
+        <ScrollToBottomPopup messagesContainerRef={messagesContainerRef} />
       </CardContent>
       <CardFooter className="!mt-4">
         <AddMessageForm roomId={room?.id} userId={user.id} />
