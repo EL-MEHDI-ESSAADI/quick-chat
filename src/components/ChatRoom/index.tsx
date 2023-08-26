@@ -16,7 +16,7 @@ import {
 import { SingleMessageView } from "./SingleMessageView";
 import { AddMessageForm } from "./AddMessageForm";
 import { Message, Room, User } from "@/types";
-import { pb } from "@/lib/modules";
+import { pb } from "@/lib/modules/client-pocketbase";
 
 dayjs.extend(relativeTime);
 

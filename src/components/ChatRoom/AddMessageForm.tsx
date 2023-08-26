@@ -1,11 +1,17 @@
 "use client";
 
-import { pb } from "@/lib/modules";
+import { pb } from "@/lib/modules/client-pocketbase";
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export const AddMessageForm = ({ roomId, userId }: { roomId?: string, userId: string }) => {
+export const AddMessageForm = ({
+  roomId,
+  userId,
+}: {
+  roomId?: string;
+  userId: string;
+}) => {
   const [message, setMessage] = React.useState("");
 
   function handleSubmit() {

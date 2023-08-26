@@ -7,15 +7,24 @@ import { Loader2 } from "lucide-react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { pb } from "@/lib/modules";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { pb } from "@/lib/modules/client-pocketbase";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters." }),
 });
 
 function Login() {
@@ -34,13 +43,18 @@ function Login() {
     setIsLoading(true);
 
     try {
-      await pb.collection("users").authWithPassword(values.email, values.password);
+      await pb
+        .collection("users")
+        .authWithPassword(values.email, values.password);
       router.push("/");
       toast({ description: "Logged in successfully" });
     } catch (error: any) {
       toast({
         title: "Failed to login",
-        description: error.status === 400 ? "Invalid credentials." : "Something went wrong.",
+        description:
+          error.status === 400
+            ? "Invalid credentials."
+            : "Something went wrong.",
         variant: "destructive",
       });
     } finally {
@@ -49,9 +63,11 @@ function Login() {
   }
 
   return (
-    <div className="max-w-xl p-3 mx-auto h-screen grid content-center">
-      <div className="space-y-2 text-center mb-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Sign in with your account</h1>
+    <div className="mx-auto grid h-screen max-w-xl content-center p-3">
+      <div className="mb-4 space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Sign in with your account
+        </h1>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-2">
@@ -62,7 +78,12 @@ function Login() {
               <FormItem>
                 <FormLabel className="sr-only">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="example@gmail.com" type="email" {...field} disabled={isLoading} />
+                  <Input
+                    placeholder="example@gmail.com"
+                    type="email"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -76,7 +97,12 @@ function Login() {
               <FormItem>
                 <FormLabel className="sr-only">Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="********" type="password" {...field} disabled={isLoading} />
+                  <Input
+                    placeholder="********"
+                    type="password"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -89,7 +115,12 @@ function Login() {
           </Button>
         </form>
       </Form>
-      <p className="mt-3 text-center">Don't have an account? <Link href="/register" className="underline">Sign up</Link></p>
+      <p className="mt-3 text-center">
+        Don't have an account?{" "}
+        <Link href="/register" prefetch={false} className="underline">
+          Sign up
+        </Link>
+      </p>
     </div>
   );
 }

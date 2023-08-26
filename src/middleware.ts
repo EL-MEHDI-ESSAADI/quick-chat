@@ -3,24 +3,32 @@ import {
   PAGES_RESTRICTED_FROM_LOGGEDOUT_USERS,
 } from "@/constants";
 import { NextRequest, NextResponse } from "next/server";
-import { pb } from "./lib/modules";
+import { POCKETBASE_URL } from "@/constants";
+import PocketBase from "pocketbase";
 
 export default async function middleware(request: NextRequest) {
+  const pb = new PocketBase(POCKETBASE_URL);
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
   const authCookie = request.cookies.get("pb_auth");
 
-  pb.authStore.onChange(() => {
-    response?.headers.set("set-cookie", pb.authStore.exportToCookie());
-  });
-
-  if (authCookie)
+  if (authCookie) {
     pb.authStore.loadFromCookie(`${authCookie.name}=${authCookie.value}`);
 
-  try {
-    if (pb.authStore.isValid) await pb.collection("users").authRefresh();
-  } catch (error) {
-    pb.authStore.clear();
+    try {
+      if (!pb.authStore.isValid)
+        throw new Error("Invalid or expired user token");
+
+      await pb.collection("users").authRefresh();
+      response?.headers.set(
+        "set-cookie",
+        pb.authStore.exportToCookie({ httpOnly: false }),
+      );
+    } catch (error) {
+      pb.authStore.clear();
+      response.cookies.delete("pb_auth");
+      console.error(error);
+    }
   }
 
   if (
@@ -47,6 +55,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|images/favicon).*)",
   ],
 };

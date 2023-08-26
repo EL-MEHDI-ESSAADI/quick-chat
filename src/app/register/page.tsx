@@ -7,23 +7,45 @@ import { Loader2 } from "lucide-react";
 import * as z from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { pb } from "@/lib/modules";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { pb } from "@/lib/modules/client-pocketbase";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
 const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Username must be at least 2 characters." }),
+  name: z
+    .string()
+    .min(2, { message: "Username must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters." }),
   avatar: z
     .any()
     .refine((files) => files?.length == 1, "Image is required.")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-    .refine((files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type), ".jpg, .gif, .png and .webp files are accepted."),
+    .refine(
+      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+      `Max file size is 5MB.`,
+    )
+    .refine(
+      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      ".jpg, .gif, .png and .webp files are accepted.",
+    ),
 });
 
 function Register() {
@@ -52,7 +74,9 @@ function Register() {
 
     try {
       await pb.collection("users").create(formData);
-      await pb.collection("users").authWithPassword(values.email, values.password);
+      await pb
+        .collection("users")
+        .authWithPassword(values.email, values.password);
       router.push("/");
       toast({ description: "Account created successfully" });
     } catch (error) {
@@ -68,10 +92,14 @@ function Register() {
   }
 
   return (
-    <div className="max-w-xl p-3 mx-auto h-screen grid content-center">
-      <div className="space-y-2 text-center mb-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
-        <p className="text-sm text-muted-foreground">Enter your name, email, password below to create your account</p>
+    <div className="mx-auto grid h-screen max-w-xl content-center p-3">
+      <div className="mb-4 space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Create an account
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Enter your name, email, password below to create your account
+        </p>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-2">
@@ -82,7 +110,12 @@ function Register() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl className="!mt-1">
-                  <Input placeholder="Name" type="text" {...field} disabled={isLoading} />
+                  <Input
+                    placeholder="Name"
+                    type="text"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -96,7 +129,12 @@ function Register() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl className="!mt-1">
-                  <Input placeholder="example@gmail.com" type="email" {...field} disabled={isLoading} />
+                  <Input
+                    placeholder="example@gmail.com"
+                    type="email"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -110,7 +148,12 @@ function Register() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl className="!mt-1">
-                  <Input placeholder="********" type="password" {...field} disabled={isLoading} />
+                  <Input
+                    placeholder="********"
+                    type="password"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
