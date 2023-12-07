@@ -27,7 +27,7 @@ const HoverProfilePreview = ({
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <button>{children}</button>
+        <button className="flex-shrink-0">{children}</button>
       </HoverCardTrigger>
       <HoverCardContent className="w-fit max-w-xs">
         <div className="flex justify-between gap-6">
@@ -64,14 +64,14 @@ export const SingleMessageView = ({
     <Avatar
       src={getUserImageSrc(message.expand.user)}
       alt={message.expand.user.name}
-      className="cursor-pointer"
+      className="flex-shrink-0 cursor-pointer"
     />
   );
 
   return (
     <li>
       <div
-        className={cn("relative flex flex-row space-x-1", {
+        className={cn("relative flex items-end flex-row space-x-1", {
           "flex-row-reverse space-x-reverse": isCurrentUserMessage,
         })}
       >
@@ -82,17 +82,22 @@ export const SingleMessageView = ({
           </HoverProfilePreview>
         )}
 
-        <div
-          className={cn("inline-flex items-start space-x-2 rounded p-3", {
+        <p
+          className={cn("break-words overflow-hidden rounded p-3 text-sm sm:text-base", {
             "bg-primary text-primary-foreground": isCurrentUserMessage,
             "bg-secondary text-secondary-foreground": !isCurrentUserMessage,
           })}
         >
           {!isCurrentUserMessage && (
-            <span className="e.et-bold">{message.expand.user.name}:&nbsp;</span>
+            <>
+              <span className="font-bold italic">
+                {message.expand.user.name}
+              </span>
+              <br />
+            </>
           )}
           {message.body}
-        </div>
+        </p>
       </div>
       <div
         className={cn("mt-1 text-xs text-muted-foreground", {

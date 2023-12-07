@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { SingleMessageView } from "./SingleMessageView";
 import { AddMessageForm } from "./AddMessageForm";
-import { Message, Room, User } from "@/types";
+import { Message, Room } from "@/types";
 import { pb } from "@/lib/modules/client-pocketbase";
 
 dayjs.extend(relativeTime);
@@ -32,7 +32,7 @@ const getRoomWithMessages = (roomId: string) => {
     ]);
 };
 
-const useGlobalChat = (roomId: string, user: NonNullable<User>) => {
+const useGlobalChat = (roomId: string, userId: string) => {
   const messagesContainerRef = React.useRef<HTMLDivElement>(null);
 
   const queryClient = useQueryClient();
@@ -53,9 +53,16 @@ const useGlobalChat = (roomId: string, user: NonNullable<User>) => {
       <SingleMessageView
         key={message.id}
         message={message}
-        currentUserId={user.id}
+        currentUserId={userId}
       />
     ));
+
+  function scrollToBottom() {
+    messagesContainerRef.current?.scrollTo({
+      behavior: "smooth",
+      top: messagesContainerRef.current?.scrollHeight,
+    });
+  }
 
   // realtime messages update
   useEffect(() => {
@@ -64,19 +71,17 @@ const useGlobalChat = (roomId: string, user: NonNullable<User>) => {
     pb.collection("messages").subscribe<Message>("*", (e) => {
       if (e.action !== "create" || e.record.room !== room?.id) return;
       queryClient.invalidateQueries({ queryKey: queryKey });
+      if (e.record.user === userId) scrollToBottom();
     });
 
     return () => {
       pb.collection("messages").unsubscribe();
     };
-  }, [queryClient, room?.id, queryKey, user?.id]);
+  }, [queryClient, room?.id, queryKey, userId]);
 
   // initial scroll to bottom
   useEffect(() => {
-    messagesContainerRef.current?.scrollTo({
-      behavior: "smooth",
-      top: messagesContainerRef.current?.scrollHeight,
-    });
+    scrollToBottom();
   }, [room?.id]);
 
   return {
@@ -132,15 +137,9 @@ const ScrollToBottomPopup = ({
   );
 };
 
-function ChatRoom({
-  roomId,
-  user,
-}: {
-  roomId: string;
-  user: NonNullable<User>;
-}) {
+function ChatRoom({ roomId, userId }: { roomId: string; userId: string }) {
   const { isLoading, isError, room, messagesContainerRef, messagesElements } =
-    useGlobalChat(roomId, user);
+    useGlobalChat(roomId, userId);
 
   return (
     <Card>
@@ -162,7 +161,7 @@ function ChatRoom({
         <ScrollToBottomPopup messagesContainerRef={messagesContainerRef} />
       </CardContent>
       <CardFooter className="!mt-4">
-        <AddMessageForm roomId={room?.id} userId={user.id} />
+        <AddMessageForm roomId={room?.id} userId={userId} />
       </CardFooter>
     </Card>
   );

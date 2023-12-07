@@ -13,7 +13,7 @@ export default async function Home() {
     <>
       <Header user={user} />
       <main className="container">
-        <ChatRoom roomId={GLOBAL_ROOM_ID} user={user} />
+        <ChatRoom roomId={GLOBAL_ROOM_ID} userId={user.id} />
       </main>
     </>
   );
